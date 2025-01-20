@@ -1,6 +1,10 @@
 import random
 import uuid
 from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+
 from api import serializer as api_serializer
 from userauths.models import User, CustomerProfile, VendorProfile
 
@@ -43,7 +47,25 @@ class PasswordResetEmailVerifyAPIView(generics.RetrieveAPIView):
             user.save()
 
             link = f"http://localhost:5173/create-new-password/?otp= {user.otp}&uuidn64={uuidb64}"
-            print("link =====", link)
+            
+            context = {
+                "link": link,
+                "username": user.username
+            }
+            subject = "password Reset Email"
+            text_body = render_to_string("email/password_reset.html", context)
+            html_body = render_to_string("email/password_reset.html", context)
+            
+            msg = EmailMultiAlternatives(
+                subject=subject,
+                from_email=settings.FROM_EMAIL,
+                to=[user.email],
+                body=text_body
+            )
+            msg.attach_alternative(html_body, "text/html")
+            msg.send() 
+            print("link ===", link)
+
         return user
          
 
