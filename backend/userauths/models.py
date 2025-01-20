@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from phonenumber_field.modelfields import PhoneNumberField
@@ -13,6 +14,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     full_name = models.CharField(unique=True, max_length=100)
     otp = models.CharField(max_length=250, null=True, blank=True)
+    refresh_token = models.CharField(max_length=250, null=True, blank=True)
     user_type = models.CharField(max_length=100, choices=USER_TYPE, default='Customer')
     
     USERNAME_FIELD = 'email'
