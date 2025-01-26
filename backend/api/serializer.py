@@ -2,7 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from userauths.models import User, CustomerProfile, VendorProfile
+from userauths.models import User, Profile
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -45,12 +45,9 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
-class CustomerProfileSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomerProfile
+        model = Profile
         fields = '__all__'
 
-class VendorProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = VendorProfile
-        fields = '__all__'
+

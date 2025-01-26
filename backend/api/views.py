@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 
 from api import serializer as api_serializer
-from userauths.models import User, CustomerProfile, VendorProfile
+from userauths.models import User, Profile
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
