@@ -241,13 +241,3 @@ class Review(models.Model):
     def profile(self):
         return User.objects.get(user=self.user)
     
-
-
-
-class Wishlist(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product)
-
-
-
-    

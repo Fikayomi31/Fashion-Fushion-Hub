@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'shortuuid',
     'django_ckeditor_5',
+    'import_export',
 
 
     # Custom App
@@ -60,7 +61,7 @@ INSTALLED_APPS = [
     'userauths',
     'vendor',
     'store',
-    'customer',
+    'customer'
 
 ]
 
