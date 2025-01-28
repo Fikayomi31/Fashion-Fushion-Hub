@@ -29,13 +29,18 @@ TYPE = (
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, related_name='vendor')
     image = models.ImageField(upload_to='vendor/images', default='vendor.jpg', blank=True)
-    store_name = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    country = models.CharField(max_length=100, null=True, blank=True)
-    vendor_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet='1234567890')
     date = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField(blank=True, null=True)
+    slug = models.SlugField(unique=True, max_length=500)
+    mobile = models.CharField(max_length=100, help_text='Shop Mobile Number', null=True, blank=True)
+    active = models.BooleanField(default=False)
 
+    class Meta:
+        verbose_name_plural = 'Vendors'
+        ordering = ['-date']
+
+        
     def __str__(self):
         return str(self.store_name)
     

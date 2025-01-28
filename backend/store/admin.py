@@ -2,40 +2,36 @@ from django.contrib import admin
 from store import models as store_model
 
 
-
 class GalleryInline(admin.TabularInline):
     model = store_model.Gallery
+    extra = 0
 
-class VariantInline(admin.TabularInline):  # You can also use admin.StackedInline
-    model = store_model.Variant
-    
+class SpecificationInline(admin.TabularInline):  # You can also use admin.StackedInline
+    model = store_model.Specification
+    extra = 0   
 
-class VariantItemInline(admin.TabularInline):
-    model = store_model.VariantItem
+class ColorInline(admin.TabularInline):
+    model = store_model.Color
+    extra = 0
+
+
+class SizeInline(admin.TabularInline):
+    model = store_model.Size
+    extra = 0
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['title', 'image']
     list_editable = ['image']
     prepopulated_fields = {'slug': ('title',)}
 
-class SubCategoryAdmin(admin.ModelAdmin):
-    list_display = ['name']
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = [ 'name', 'category', 'price', 'status', 'stock', 'vendor', 'date']
-    search_fields =['name', 'category__title']
-    list_filter = ['status', 'category']
-    inlines = [GalleryInline, VariantInline]
-    prepopulated_fields = {'slug': ('name',)}
+    list_display = [ 'title', 'price', 'shipping_amount', 'stock_qty', 'in_stock', 'vendor', 'featured']
+    search_fields =['title']
+    list_filter = ['date']
+    inlines = [GalleryInline, SpecificationInline, SizeInline, ColorInline]
 
-class VariantAdmin(admin.ModelAdmin):
-    list_display = ['product', 'name']
-    search_fields = ['product__name' 'name']
-    inlines = [VariantItemInline]
 
-class VariantItemAdmin(admin.ModelAdmin):
-    list_display = ['variant', 'title', 'content']
-    search_fields = ['variant__name', 'title']
 
 class GalleryAdmin(admin.ModelAdmin):
     list_display = ['product', 'gallery_id']
@@ -66,10 +62,7 @@ class ReviewAdmin(admin.ModelAdmin):
     list_filter = ['active', 'rating']
 
 admin.site.register(store_model.Category, CategoryAdmin)
-admin.site.register(store_model.SubCategory, SubCategoryAdmin)
 admin.site.register(store_model.Product, ProductAdmin)
-admin.site.register(store_model.Variant, VariantAdmin)
-admin.site.register(store_model.VariantItem, VariantItemAdmin)
 admin.site.register(store_model.Gallery, GalleryAdmin)
 admin.site.register(store_model.Cart, CartAdmin)
 admin.site.register(store_model.Order, OrderAdmin)

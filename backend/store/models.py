@@ -14,6 +14,7 @@ CATEGORY_TYPE = (
     ('MEN', 'MEN'),
     ('WOMEN', 'WOMEN'),
     ('TEEN', 'TEEN'),
+    ('UNISEX', 'UNISEX')
 )
 
 PAYMENT_STATUS = (
@@ -52,19 +53,21 @@ PAYMENT_STATUS_CHOICES = (
     ('failed', 'Failed'),
 )
 STATUS = (
-    ('Published', 'Published'),
     ('Draft', 'Draft'),
     ('Disabled', 'Disabled'),
+    ('In review', 'In Review'),
+    ('Published', 'Published'),
 )
 
 class Category(models.Model):
     title = models.CharField(max_length=200, choices=CATEGORY_TYPE, default='MEN')
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    slug = models.SlugField(unique=True)
     image = models.ImageField(upload_to='image', null=True, blank=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name_plural = "Categories"
-        ordering = ['-title']
+        verbose_name_plural = "Category"
+        ordering = ['title']
         
     def __str__(self):
         return self.title
@@ -74,65 +77,52 @@ class Category(models.Model):
             self.slug = slugify(self.title)
         super(Category, self).save(*args, **kwargs)
 
-class SubCategory(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
     description = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='products', null=True, blank=True)
-    subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    stock = models.PositiveIntegerField(default=0, null=True, blank=True)
+    shipping_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0.0) 
+    stock_qty = models.PositiveIntegerField(default=1)
+    in_stock = models.BooleanField(default=True)
     images = models.ImageField(upload_to='product_images/', blank=True, null=True)
     vendor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
     date_added = models.DateTimeField(default=timezone.now)
-    slug = models.SlugField(unique=True, null=True, blank=True)
-    product_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet='1234567890')
-    status = models.CharField(choices=STATUS, max_length=50, default='Published')
-    date = models.DateTimeField(timezone.now)
+    slug = models.SlugField(unique=True)
+    status = models.CharField(choices=STATUS, max_length=100, default='Published')
+    date = models.DateTimeField(auto_now_add=True)
+    featured = models.BooleanField(default=False)
+    pid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet='1234567890')
 
+    rating = models.PositiveIntegerField(default=0)  
 
     class Meta:
         ordering = ['-id']
         verbose_name_plural = "Products"
 
     def __str__(self):
-        return self.name
+        return self.title
     
     def save(self, *args, **kwargs):
         if self.slug == "" or self.slug == None:
             self.slug = slugify(self.title) + "-" + str(shortuuid.uuid().lower()[:2])
         super(Product, self).save(*args, **kwargs)
 
-    def average_rating(self):
-        average_rating = Review.objects.filter(prodect=self).aggregate(avg_rating=models.Avg('rating'))
-        return average_rating['avg_rating']
     
-    def rating_count(self):
-        return Review.objects.filter(product=self).count()
-    
-    def reviews(self):
-        return Review.objects.filter(product=self, active=True)
-
-class Variant(models.Model):
+class Specification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
-    name = models.CharField(max_length=1000, verbose_name="Variant Name", null=True, blank=True)
-
-    def items(self):
-        return VariantItem.objects.filter(variant=self)
+    title = models.CharField(max_length=1000)
+    content = models.CharField(max_length=1000)
     
     def __str__(self):
         return self.name
     
-class VariantItem(models.Model):
-    variant = models.ForeignKey(Variant, on_delete=models.CASCADE, related_name='variant_items')
-    title = models.CharField(max_length=1000, verbose_name="Item Title", null=True, blank=True)
-    content = models.CharField(max_length=1000, verbose_name="Item Content", null=True, blank=True)
+class Size(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=1000)
+    price = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
 
     def __str__(self):
         return self.variant.name
@@ -140,12 +130,20 @@ class VariantItem(models.Model):
 class Gallery(models.Model):
     product = models.ForeignKey(Product, on_delete=CASCADE, null=True, blank=True)
     image = models.FileField(upload_to='images', default='gallery.jpg')
-    gallery_id= ShortUUIDField(unique=True, length=6, max_length=20, alphabet='1234567890')
+    gid= ShortUUIDField(unique=True, length=6, max_length=20, alphabet='1234567890')
+    active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.product.name} - image"
+        return self.product.title
 
+class Color(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=1000)
+    color_code = models.CharField(max_length=1000)
 
+    def __str__(self):
+        return self.name
+    
 class Coupon(models.Model):
     vendor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     code = models.CharField(max_length=100)
