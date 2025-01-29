@@ -2,7 +2,7 @@ from django.db import models
 from shortuuid.django_fields import ShortUUIDField
 from userauths.models import User
 from django.utils.text import slugify
-from store.models import OrderItem
+from store.models import CartOrderItem
 
 NOTIFICATION_TYPE = (
     ('New Order', 'New Order'),
@@ -40,7 +40,7 @@ class Vendor(models.Model):
         verbose_name_plural = 'Vendors'
         ordering = ['-date']
 
-        
+
     def __str__(self):
         return str(self.store_name)
     
@@ -50,7 +50,7 @@ class Vendor(models.Model):
         super(Vendor, self).save(*args, **kwargs)
 
 
-class Payment(models.Model):
+"""class Payment(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
     item = models.ForeignKey(OrderItem, on_delete=models.SET_NULL, null=True, related_name='order_item')
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
@@ -94,4 +94,4 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.type
-        
+        """

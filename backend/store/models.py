@@ -1,3 +1,5 @@
+from enum import unique
+from operator import truediv
 from django.utils import timezone
 from shortuuid.django_fields import ShortUUIDField
 import shortuuid
@@ -155,71 +157,85 @@ class Coupon(models.Model):
 class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    price = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
-    vat = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
+    tax_fee = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
+    shipping_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0.0) 
+    sub_total = models.DecimalField(decimal_places=2, max_digits=12, default=0.0) 
+    price = models.DecimalField(decimal_places=2, max_digits=12, default=0.0) 
+    color = models.CharField(max_length=100, null=True, blank=True)
+    size = models.CharField(max_length=100, null=True, blank=True)
     cart_id = models.CharField(max_length=1000, null=True, blank=True)
-    qty = models.PositiveIntegerField(default=0, null=True, blank=True)
-    date = models.DateTimeField(default=timezone.now)
+    qty = models.PositiveIntegerField(default=0)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.cart_id} - {self.product.name}"
+        return f"{self.cart_id} - {self.product.title}"
 
-    
-class Order(models.Model):
+class CartOrder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='customer', blank=True)
     vendor = models.ManyToManyField(User, blank=True)
+    
     sub_total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     shipping = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     tax = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
-    coupons = models.ManyToManyField(Coupon, blank=True)
     payment_id = models.CharField(max_length=1000, null=True, blank=True)
     order_id = ShortUUIDField(length=6, max_length=20, alphabet='1234567890')
     date = models.DateTimeField(timezone.now)
+    
     order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='Pending')
     payment_status = models.CharField(max_length=100, choices=PAYMENT_STATUS, default='Processing')
-    payment_method = models.CharField(max_length=100, choices=PAYMENT_METHOD, default='Bank Transfer')
-    
 
+    #coupon
+    inittial_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    saved  = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+    #Bio data
+    full_name = models.CharField(max_length=100, null=True, blank=True)
+    email =  models.CharField(max_length=100, null=True, blank=True)
+    mobile =  models.CharField(max_length=100, null=True, blank=True)
+
+    #shipping Address
+    address = models.CharField(max_length=100, null=True, blank=True)
+    city =  models.CharField(max_length=100, null=True, blank=True)
+    state =  models.CharField(max_length=100, null=True, blank=True)
+
+    oid = ShortUUIDField(unique=True, length=10, alphabet='abcde12345') 
+    date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-date']
-
-    def order_items(self):
-        return OrderItem.objects.filter(order=self)
 
     def __str__(self):
         return self.order_id
     
 
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+class CartOrderItem(models.Model):
+    order = models.ForeignKey(CartOrder, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    vendor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    vendor = models.ForeignKey(User, on_delete=models.CASCADE)
+
     order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='Pending')
+    
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    vat = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
+    tax = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
-    initial_total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
-    saved = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
-    coupon = models.ManyToManyField(Coupon, blank=True) 
-    applied_coupon = models.BooleanField(default=False)
+    sub_total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
+    shipping_fee = models.DecimalField(max_digits=10, decimal_places=2)
+    
     color = models.CharField(max_length=100, null=True, blank=True)
     size = models.CharField(max_length=100, null=True, blank=True)
     qty = models.IntegerField(default=0)
-    item_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet='1234567890')
+    
+    #coupon
+    inittial_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    saved  = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    oid = ShortUUIDField(unique=True, length=6, max_length=20, alphabet='1234567890')
     date = models.DateTimeField(timezone.now)
 
     class Meta:
         ordering = ['-date']
 
-    def order_id(self):
-        return f"order ID #{self.order.order_id}"
-    
-    def payment_status(self):
-        return f"{self.order.payment_status}"
-    
     def __str__(self):
         return self.order_id
     

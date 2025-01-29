@@ -1,7 +1,7 @@
 from django.contrib import admin
 from vendor import models as vendor_models
 
-class VendorAdmin(admin.ModelAdmin):
+"""class VendorAdmin(admin.ModelAdmin):
     list_display = ['store_name', 'user', 'country', 'vendor_id', 'date']
     search_fields = ['store_name', 'user__username', 'vendor_id']
     prepopulated_fields = {'slug': ('store_name',)}
@@ -26,3 +26,5 @@ admin.site.register(vendor_models.Vendor, VendorAdmin)
 admin.site.register(vendor_models.Payment, PaymentAdmin)
 admin.site.register(vendor_models.BankAccount, BankAccountAdmin)
 admin.site.register(vendor_models.Notification, NotificationAdmin)
+"""
+admin.site.register(vendor_models.Vendor)

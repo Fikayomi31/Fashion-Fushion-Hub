@@ -10,7 +10,7 @@ TYPE = (
     ('Item Delivered', 'Item Delivered')
 )
 
-class Wishlist(models.Model):
+"""class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='wishlist')
 
@@ -52,4 +52,4 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.type
-        
+        """

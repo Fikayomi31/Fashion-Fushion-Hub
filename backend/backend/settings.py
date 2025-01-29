@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'userauths',
     'vendor',
     'store',
-    'customer'
+    'customer',
+    'addon',
 
 ]
 

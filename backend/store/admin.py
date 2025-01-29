@@ -33,7 +33,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 
-class GalleryAdmin(admin.ModelAdmin):
+"""class GalleryAdmin(admin.ModelAdmin):
     list_display = ['product', 'gallery_id']
     search_fields = ['product__name', 'gallery_id']
 
@@ -59,13 +59,15 @@ class OrderItemAdmin(admin.ModelAdmin):
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ['user', 'product', 'rating', 'active', 'date']
     search_fields = ['user__username', 'product__name']
-    list_filter = ['active', 'rating']
+    list_filter = ['active', 'rating']"""
 
 admin.site.register(store_model.Category, CategoryAdmin)
 admin.site.register(store_model.Product, ProductAdmin)
-admin.site.register(store_model.Gallery, GalleryAdmin)
+
+"""admin.site.register(store_model.Gallery, GalleryAdmin)
 admin.site.register(store_model.Cart, CartAdmin)
 admin.site.register(store_model.Order, OrderAdmin)
 admin.site.register(store_model.Coupon, CouponAdmin)
 admin.site.register(store_model.OrderItem, OrderItemAdmin)
 admin.site.register(store_model.Review, ReviewAdmin)
+"""

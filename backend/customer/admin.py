@@ -1,4 +1,4 @@
-from django.contrib import admin
+"""from django.contrib import admin
 #import/export model data functionality to your Django Admin models.
 from import_export.admin import ImportExportModelAdmin
 from customer import models as customer_models
@@ -16,3 +16,4 @@ admin.site.register(customer_models.Address, AddressAdmin)
 admin.site.register(customer_models.Wishlist, WishlistAdmin)
 admin.site.register(customer_models.Notification, NotificationAdmin)
 
+"""
