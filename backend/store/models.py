@@ -1,3 +1,4 @@
+from itertools import product
 from django.utils import timezone
 from shortuuid.django_fields import ShortUUIDField
 import shortuuid
@@ -89,16 +90,16 @@ class Product(models.Model):
     shipping_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0.0) 
     stock_qty = models.PositiveIntegerField(default=1)
     in_stock = models.BooleanField(default=True)
-    images = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     vendor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
-    date_added = models.DateTimeField(default=timezone.now)
+    rating = models.PositiveIntegerField(default=0)
+    views = models.PositiveIntegerField(default=0)
     slug = models.SlugField(unique=True, null=True, blank=True)
     status = models.CharField(choices=STATUS, max_length=100, default='Published')
-    date = models.DateTimeField(auto_now_add=True)
     featured = models.BooleanField(default=False)
     pid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet='1234567890')
-
     rating = models.PositiveIntegerField(default=0)  
+    date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-id']
@@ -116,9 +117,25 @@ class Product(models.Model):
         product_rating = Review.objects.filter(product=self).aggregate(avg_rating=models.Avg("rating"))
         return product_rating["avg_rating"]
     
+    def rating_count(self):
+        return Review.objects.filter(product=self).count()
+        
+
     def save(self, *args, **kwargs):
         self.rating = self.product_rating
         super(Product, self).save(*args, **kwargs)
+
+    def gallery(self):
+        return Gallery.objects.filter(product=self)
+    
+    def specification(self):
+        return Specification.objects.filter(product=self)
+    
+    def size(self):
+        return Size.objects.filter(product=self)
+    
+    def color(self):
+        return Color.objects.filter(product=self)
 
 class Specification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
@@ -190,8 +207,7 @@ class CartOrder(models.Model):
     total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     payment_id = models.CharField(max_length=1000, null=True, blank=True)
     order_id = ShortUUIDField(length=6, max_length=20, alphabet='1234567890')
-    date = models.DateTimeField(timezone.now)
-    
+
     order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='Pending')
     payment_status = models.CharField(max_length=100, choices=PAYMENT_STATUS, default='Processing')
 
