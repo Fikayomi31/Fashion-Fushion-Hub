@@ -32,11 +32,6 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [GalleryInline, SpecificationInline, SizeInline, ColorInline]
 
 
-
-"""class GalleryAdmin(admin.ModelAdmin):
-    list_display = ['product', 'gallery_id']
-    search_fields = ['product__name', 'gallery_id']
-
 class CartAdmin(admin.ModelAdmin):
     list_display = ['cart_id', 'product', 'user', 'qty', 'price', 'total', 'date']
     search_fields = ['cart_id', 'product__name', 'user__username']
@@ -46,28 +41,24 @@ class CouponAdmin(admin.ModelAdmin):
     list_display = ['code', 'vendor', 'discount']
     search_fields = ['code', 'vendor__name']
 
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['order_id', 'customer', 'total', 'payment_status', 'order_status', 'payment_method', 'date']
+class CartOrderAdmin(admin.ModelAdmin):
+    list_display = ['order_id', 'customer', 'total', 'payment_status', 'order_status', 'date']
     search_fields = ['order_id', 'customer__username']
-    list_editable = ['payment_status', 'order_status', 'payment_method']
+    list_editable = ['payment_status', 'order_status']
 
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ['item_id', 'order', 'product', 'qty', 'price', 'total']
-    search_fields = ['item_id', 'order__order_id', 'product__name']
+class CartOrderItemAdmin(admin.ModelAdmin):
+    list_display = ['oid', 'order', 'product', 'qty', 'price', 'total']
+    search_fields = ['oid', 'order__order_id', 'product__name']
     list_filter = ['order__date']
 
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ['user', 'product', 'rating', 'active', 'date']
     search_fields = ['user__username', 'product__name']
-    list_filter = ['active', 'rating']"""
+    list_filter = ['active', 'rating']
 
 admin.site.register(store_model.Category, CategoryAdmin)
 admin.site.register(store_model.Product, ProductAdmin)
-
-"""admin.site.register(store_model.Gallery, GalleryAdmin)
 admin.site.register(store_model.Cart, CartAdmin)
-admin.site.register(store_model.Order, OrderAdmin)
-admin.site.register(store_model.Coupon, CouponAdmin)
-admin.site.register(store_model.OrderItem, OrderItemAdmin)
-admin.site.register(store_model.Review, ReviewAdmin)
-"""
+admin.site.register(store_model.CartOrder, CartOrderAdmin)
+admin.site.register(store_model.CartOrderItem,CartOrderItemAdmin)
+

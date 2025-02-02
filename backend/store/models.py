@@ -1,13 +1,13 @@
-from enum import unique
-from operator import truediv
 from django.utils import timezone
 from shortuuid.django_fields import ShortUUIDField
 import shortuuid
-from django_ckeditor_5.fields import CKEditor5Field
-from django.utils.text import slugify
 
 from django.db import models
+from django.utils.text import slugify
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from userauths.models import User, Profile
+from vendor.models import Vendor
 from django.db.models import CASCADE
 
 
@@ -63,7 +63,7 @@ STATUS = (
 
 class Category(models.Model):
     title = models.CharField(max_length=200, choices=CATEGORY_TYPE, default='MEN')
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, null=True, blank=True)
     image = models.ImageField(upload_to='image', null=True, blank=True)
     active = models.BooleanField(default=True)
 
@@ -92,7 +92,7 @@ class Product(models.Model):
     images = models.ImageField(upload_to='product_images/', blank=True, null=True)
     vendor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
     date_added = models.DateTimeField(default=timezone.now)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, null=True, blank=True)
     status = models.CharField(choices=STATUS, max_length=100, default='Published')
     date = models.DateTimeField(auto_now_add=True)
     featured = models.BooleanField(default=False)
@@ -112,7 +112,14 @@ class Product(models.Model):
             self.slug = slugify(self.title) + "-" + str(shortuuid.uuid().lower()[:2])
         super(Product, self).save(*args, **kwargs)
 
+    def product_rating(self):
+        product_rating = Review.objects.filter(product=self).aggregate(avg_rating=models.Avg("rating"))
+        return product_rating["avg_rating"]
     
+    def save(self, *args, **kwargs):
+        self.rating = self.product_rating
+        super(Product, self).save(*args, **kwargs)
+
 class Specification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=1000)
@@ -147,9 +154,11 @@ class Color(models.Model):
         return self.name
     
 class Coupon(models.Model):
-    vendor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    vendor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="coupons_provided")
+    user_by = models.ManyToManyField(User, blank=True, related_name="coupons_used")
     code = models.CharField(max_length=100)
     discount = models.IntegerField(default=1)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.code
@@ -238,7 +247,23 @@ class CartOrderItem(models.Model):
 
     def __str__(self):
         return self.order_id
+
+
+class ProductFaq(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=CASCADE)
+    email = models.EmailField(null=True, blank=True)
+    question = models.CharField(max_length=1000)
+    answer = models.TextField(null=True, blank=True)
+    active = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question
     
+    class Meta:
+        verbose_name_plural = "Product FAQs"
+
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -253,5 +278,39 @@ class Review(models.Model):
     
 
     def profile(self):
-        return User.objects.get(user=self.user)
+        return Profile.objects.get(user=self.user)
     
+    class Meta:
+        verbose_name_plural = "Review  & Rating"
+
+
+@receiver(post_save, sender=Review)
+def update_product_rating(sender, instance, **kwargs):
+    if instance.product:
+        instance.product.save()
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.title
+
+    class Meta:
+        verbose_name_plural = "Wishlist"
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    order = models.ForeignKey(CartOrder, on_delete=models.SET_NULL, null=True, blank=True)
+    order_item = models.ForeignKey(CartOrderItem, on_delete=models.SET_NULL, null=True, blank=True)
+    seen = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        if self.order:
+            return self.order.oid
+        else:
+            return f"Notification - {self.pk}"
+        

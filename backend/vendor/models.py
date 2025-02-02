@@ -2,7 +2,7 @@ from django.db import models
 from shortuuid.django_fields import ShortUUIDField
 from userauths.models import User
 from django.utils.text import slugify
-from store.models import CartOrderItem
+
 
 NOTIFICATION_TYPE = (
     ('New Order', 'New Order'),
