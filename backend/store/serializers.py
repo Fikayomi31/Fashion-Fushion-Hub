@@ -1,39 +1,37 @@
-from backend import vendor
-from rest_framework import serializer
+from rest_framework import serializers
 
 from store.models import Category, Notification, ProductFaq, Size, Gallery, Specification,Product, Cart, CartOrder, Color, CartOrderItem, Review, Coupon, Gallery
 from vendor.models import Vendor
 
 
-class CategorySerialier(serializer.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     
     class Meta:
-        models = Category
+        model = Category
         fields = '__all__'
 
-
-class GallerySerializer(serializer.ModelSerializer):
+class GallerySerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Gallery
+        model = Gallery
         fields = '__all__'
 
-class SizeSerializer(serializer.ModelSerializer):
+class SizeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Size
+        model = Size
         fields = '__all__'
 
-class ColorSerializer(serializer.ModelSerializer):
+class ColorSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Color
+        model = Color
         fields = '__all__'
 
-class Specificationserializer(serializer.ModelSerializer):
+class Specificationserializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Specification
+        model = Specification
         fields = '__all__'
 
 
@@ -42,14 +40,14 @@ class Specificationserializer(serializer.ModelSerializer):
         models = Coupon
         fields = '__all__'
 
-class ProductSerializer(serializer.ModelSerializer):
-    gallery = GallerySerializer(many=True, readonly=True)
-    color = ColorSerializer(many=True, readonly=True)
-    specification = Specificationserializer(many=True, readonly=True)
-    size = SizeSerializer(many=True, readonly=True)
+class ProductSerializer(serializers.ModelSerializer):
+    gallery = GallerySerializer(many=True, read_only=True)
+    color = ColorSerializer(many=True, read_only=True)
+    specification = Specificationserializer(many=True, read_only=True)  # Fixed casing
+    size = SizeSerializer(many=True, read_only=True)
 
     class Meta:
-        models = Product
+        model = Product
         fields = [
             'id',
             'title',
@@ -58,9 +56,9 @@ class ProductSerializer(serializer.ModelSerializer):
             'price',
             'discount',
             'shipping_amount',
-            'stoct_qty',
+            'stock_qty',
             'image',
-            'in-stock',
+            'in_stock',
             'vendor',
             'slug',
             'status',
@@ -76,20 +74,21 @@ class ProductSerializer(serializer.ModelSerializer):
             'rating', 
             'date',
         ]
+    
+    def __init__(self, *args, **kwargs):  # Moved to correct indentation
+        super(ProductSerializer, self).__init__(*args, **kwargs)  # Fixed method name
 
-        def __init__(self, *args, **kwargs):
-            super(ProductSerializer, self).__int__(*args, **kwargs)
+        request = self.context.get('request')  # Fixed attribute access
 
-            request = self.content.get('request')
+        if request and request.method == "POST":
+            self.Meta.depth = 0
+        else:
+            self.Meta.depth = 3
 
-            if request and request.method == "POST":
-                self.Meta.depth = 0
-            else:
-                self.Meta.depth = 3
 
-class CartSerializer(serializer.ModelSerializer):
+class CartSerializer(serializers.ModelSerializer):
     class Meta:
-        models = Cart
+        model = Cart
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -103,10 +102,10 @@ class CartSerializer(serializer.ModelSerializer):
                 self.Meta.depth = 3
 
 
-class CartOrderSerializer(serializer.ModelSerializer):
+class CartOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = CartOrder
+        model = CartOrder
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -119,10 +118,10 @@ class CartOrderSerializer(serializer.ModelSerializer):
             else:
                 self.Meta.depth = 3
 
-class CartOrderItemSerializer(serializer.ModelSerializer):
+class CartOrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = CartOrderItem
+        model = CartOrderItem
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -135,10 +134,10 @@ class CartOrderItemSerializer(serializer.ModelSerializer):
             else:
                 self.Meta.depth = 3
 
-class ProductFaqSerializer(serializer.ModelSerializer):
+class ProductFaqSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = ProductFaq
+        model = ProductFaq
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -151,10 +150,10 @@ class ProductFaqSerializer(serializer.ModelSerializer):
             else:
                 self.Meta.depth = 3
 
-class VendorSerializer(serializer.ModelSerializer):
+class VendorSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Vendor
+        model = Vendor
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -167,11 +166,10 @@ class VendorSerializer(serializer.ModelSerializer):
             else:
                 self.Meta.depth = 3
 
-
-class Reviewerializer(serializer.ModelSerializer):
+class Reviewerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Review
+        model = Review
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -184,10 +182,10 @@ class Reviewerializer(serializer.ModelSerializer):
             else:
                 self.Meta.depth = 3
 
-class CouponSerializer(serializer.ModelSerializer):
+class CouponSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Coupon
+        model = Coupon
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -200,10 +198,10 @@ class CouponSerializer(serializer.ModelSerializer):
             else:
                 self.Meta.depth = 3
 
-class NotificationSerializer(serializer.ModelSerializer):
+class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Notification
+        model = Notification
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):

@@ -26,7 +26,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = [ 'title', 'price', 'shipping_amount', 'stock_qty', 'in_stock', 'vendor', 'featured']
+    list_display = [ 'title', 'price', 'shipping_amount', 'stock_qty', 'in_stock', 'vendor', 'featured', 'slug']
     search_fields =['title']
     list_filter = ['date']
     inlines = [GalleryInline, SpecificationInline, SizeInline, ColorInline]

@@ -92,13 +92,12 @@ class Product(models.Model):
     in_stock = models.BooleanField(default=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     vendor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
-    rating = models.PositiveIntegerField(default=0)
-    views = models.PositiveIntegerField(default=0)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    rating = models.PositiveIntegerField(default=0, null=True, blank=True)
+    views = models.PositiveIntegerField(default=0, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True)
     status = models.CharField(choices=STATUS, max_length=100, default='Published')
     featured = models.BooleanField(default=False)
-    pid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet='1234567890')
-    rating = models.PositiveIntegerField(default=0)  
+    pid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet='1234567890')    
     date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -108,22 +107,13 @@ class Product(models.Model):
     def __str__(self):
         return self.title
     
-    def save(self, *args, **kwargs):
-        if self.slug == "" or self.slug == None:
-            self.slug = slugify(self.title) + "-" + str(shortuuid.uuid().lower()[:2])
-        super(Product, self).save(*args, **kwargs)
-
     def product_rating(self):
-        product_rating = Review.objects.filter(product=self).aggregate(avg_rating=models.Avg("rating"))
-        return product_rating["avg_rating"]
+        product_rating = Review.objects.filter(product=self).aggregate(avg_rating=models.Avg('rating'))
+        return product_rating['avg_rating'] or 0
     
     def rating_count(self):
         return Review.objects.filter(product=self).count()
         
-
-    def save(self, *args, **kwargs):
-        self.rating = self.product_rating
-        super(Product, self).save(*args, **kwargs)
 
     def gallery(self):
         return Gallery.objects.filter(product=self)
@@ -136,6 +126,19 @@ class Product(models.Model):
     
     def color(self):
         return Color.objects.filter(product=self)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+
+        super(Product, self).save(*args, **kwargs)  # ✅ Save first
+
+        # ✅ Now, update the rating after saving
+        self.rating = self.product_rating()
+    
+        # ✅ Save again to update the rating field
+        super(Product, self).save(update_fields=['rating'])
+
 
 class Specification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
