@@ -61,6 +61,16 @@ STATUS = (
     ('In review', 'In Review'),
     ('Published', 'Published'),
 )
+SIZE_STATUS = (
+    ('XXXXL', 'XXXXL'),
+    ('XXXL', 'XXXL'),
+    ('XXL', 'XXL'),
+    ('XL', 'XL'),
+    ('L', 'L'),
+    ('M', 'M'),
+    ('S', 'S')
+
+)
 
 class Category(models.Model):
     title = models.CharField(max_length=200, choices=CATEGORY_TYPE, default='MEN')
@@ -146,15 +156,15 @@ class Specification(models.Model):
     content = models.CharField(max_length=1000)
     
     def __str__(self):
-        return self.name
+        return self.title
     
 class Size(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
-    name = models.CharField(max_length=1000)
-    price = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    name = models.CharField(max_length=1000, choices=SIZE_STATUS, default='XXL')
+    
 
     def __str__(self):
-        return self.variant.name
+        return self.name
 
 class Gallery(models.Model):
     product = models.ForeignKey(Product, on_delete=CASCADE, null=True, blank=True)

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useAuthStore } from '../../store/auth';
 import { Link } from 'react-router-dom';
-//import { CartContext } from '../plugin/Context';
+import { CartContext } from '../../plugin/context';
 import apiInstance from '../../utils/axios';
 import { useNavigate } from 'react-router-dom';
 
