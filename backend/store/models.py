@@ -343,3 +343,10 @@ class Notification(models.Model):
         else:
             return f"Notification - {self.pk}"
         
+class Tax(models.Model):
+    rate = models.IntegerField(default=5, help_text="Numbers added here are in percentage e.g 5%")
+    active = models.BooleanField(default=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.rate

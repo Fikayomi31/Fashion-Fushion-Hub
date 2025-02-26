@@ -61,4 +61,4 @@ admin.site.register(store_model.Product, ProductAdmin)
 admin.site.register(store_model.Cart, CartAdmin)
 admin.site.register(store_model.CartOrder, CartOrderAdmin)
 admin.site.register(store_model.CartOrderItem,CartOrderItemAdmin)
-
+admin.site.register(store_model.Tax)
