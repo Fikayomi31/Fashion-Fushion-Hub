@@ -4,8 +4,18 @@ import apiInstance from '../../utils/axios'
 import Products from './Products'
 import UserData from '../plugin/UserData'
 import CardID from '../plugin/CardID'
-import UserCountry from '../plugin/UserCountry'
 import GetCurrentAddress from '../plugin/UserCountry'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+  toast:true,
+  position:'top',
+  showConfirmButton:false,
+  timer:1500,
+  timerProgressBar:true
+
+
+})
 
 function ProductDetail() {
     const [product, setProduct] = useState({})
@@ -64,6 +74,11 @@ function ProductDetail() {
 
         const response = await apiInstance.post('cart/', formdata)
         console.log(response.data)
+
+        Toast.fire({
+            icon: 'success',
+            title: response.data.message
+           })
 
        } catch (error) {
         console.log(error)

@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth';
 import { Link } from 'react-router-dom';
 
-
 const Login = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const [isLoading, setIsLoading] = useState(false);
+
 
     useEffect(() => {
         if (isLoggedIn()) {

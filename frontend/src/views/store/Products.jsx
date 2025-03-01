@@ -2,6 +2,20 @@ import React, { useState, useEffect } from 'react'
  
 import apiInstance from '../../utils/axios'
 import { Link } from 'react-router-dom'
+import UserData from '../plugin/UserData'
+import GetCurrentAddress from '../plugin/UserCountry'
+import CardID from '../plugin/CardID'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+  toast:true,
+  position:'top',
+  showConfirmButton:false,
+  timer:1500,
+  timerProgressBar:true
+
+
+})
 
 export default function Products() {
 
@@ -14,6 +28,9 @@ export default function Products() {
   const [selectedSize, setSelectedSize] = useState({})
   const [qtyValue, setQtyValue] = useState(1)
 
+  const currentAddress = GetCurrentAddress()
+  const userData = UserData()
+  const cart_id = CardID()
 
   const handleColorButtonClick = (event, product_id, colorName) => {
     setColorValue(colorName)
@@ -49,6 +66,34 @@ export default function Products() {
 
     })
   }, [])
+
+  const handleAddToCart = async (product_id, price, shipping_amount) => {
+    try {
+     const formdata = new FormData()
+     formdata.append('product_id', product_id)
+     formdata.append('user_id', userData?.user_id)
+     formdata.append('qty', qtyValue)
+     formdata.append('price', price)
+     formdata.append('shipping_amount', shipping_amount)
+     formdata.append('country', currentAddress)
+     formdata.append('size', sizeValue)
+     formdata.append('color', colorValue)
+     formdata.append('cart_id', cart_id)
+
+     const response = await apiInstance.post('cart/', formdata)
+     console.log(response.data)
+
+     Toast.fire({
+      icon: 'success',
+      title: response.data.message
+     })
+
+    } catch (error) {
+     console.log(error)
+    }
+
+
+ }
 
   const itemsPerPage = 6 // items to be display per page
   const [currentPage, setCurrentPage] = useState(1) // manage the current page display
@@ -198,6 +243,7 @@ export default function Products() {
                     <button
                       type='button'
                       className='btn btn-primary px-3 ms-2'
+                      onClick={() => handleAddToCart(product.id, product.price, product.shipping_amount)}
                     >
                       <i className='fas fa-shopping-cart' />
                     </button>                                         
