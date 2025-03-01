@@ -4,6 +4,7 @@ from django.shortcuts import render
 from store.models import Product, Tax, Category, Cart
 from store.serializers import ProductSerializer, CategorySerializer, CartSerializer
 from userauths.models import User
+from store.models import Tax
 
 from decimal import Decimal
 
@@ -42,9 +43,10 @@ class CartAPIView(generics.ListCreateAPIView):
         qty = payload['qty']
         price = payload['price']
         shipping_amount = payload['shipping_amount']
-        size = payload[size]
+        size = payload['size']
         color = payload['color']
         cart_id = payload['cart_id']
+        country = payload['country']
 
         product = Product.objects.get(id=product_id)
         if user_id != "undefined":
@@ -52,7 +54,8 @@ class CartAPIView(generics.ListCreateAPIView):
         else:
             user = None
 
-        tax = Tax.objects.filter(rate=rate).first()
+        tax = Tax.objects.filter(country=country).first()
+
         if tax:
             tax_rate = tax.rate /100
         else:
@@ -88,8 +91,9 @@ class CartAPIView(generics.ListCreateAPIView):
             cart.color = color
             cart.size = size
             cart.cart_id = cart_id
+            cart.country = country
 
             cart.total = cart.sub_total + cart.shipping_amount + cart.tax_fee
             cart.save() 
 
-            return Response({'message': "Cart Created Successfully"}, status=status.HTTP_201_OK)
+            return Response({'message': "Cart Created Successfully"}, status=status.HTTP_201_CREATED)

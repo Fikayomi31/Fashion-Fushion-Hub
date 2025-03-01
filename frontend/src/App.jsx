@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
+import MainWrapper from "./layout/MainWrapper"
 
 import Header from "./views/base/Header";
 import Footer from "./views/base/Footer";
@@ -13,12 +14,16 @@ import Logout from "./views/auth/Logout";
 import ProductDetail from "./views/store/ProductDetail";
 
 
+
+
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <BrowserRouter>
-      
+      {/*<Header />*/}
+
+      <MainWrapper>
       
         <Routes>
           <Route path="/login" element={<Login/>} />
@@ -35,6 +40,8 @@ function App() {
           <Route path="/detail/:slug/" element={<ProductDetail/>} />
       
         </Routes>
+      </MainWrapper>
+      <Footer />
       
     </BrowserRouter>
   )
