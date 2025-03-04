@@ -12,7 +12,7 @@ import Products from "./views/store/products";
 import Dashboard from "./views/auth/Dashboard";
 import Logout from "./views/auth/Logout";
 import ProductDetail from "./views/store/ProductDetail";
-
+import Cart from "./views/store/Cart";
 
 
 
@@ -38,7 +38,7 @@ function App() {
           {/* Store Components */}
           <Route path="/products" element={<Products/>} />
           <Route path="/detail/:slug/" element={<ProductDetail/>} />
-      
+          <Route path="/cart/" element={<Cart />} />
         </Routes>
       </MainWrapper>
       <Footer />

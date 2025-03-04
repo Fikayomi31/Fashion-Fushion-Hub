@@ -4,20 +4,20 @@ import FFH_logo from '../../assets/header/FFH_logo.webp'
 import { Link } from "react-router-dom";
 
 
-
 function Header() {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const user = useAuthStore((state) => state.user);
 
-    
+    console.log(isLoggedIn())
+    console.log(user()) 
 
     return (
         <div>
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div className="container">
-                    <a className=" navbar-brand" href="#">
+                    <Link className=" navbar-brand"  to="/">
                         <img style={{ width: 40, height: 40, borderRadius: 50 }} src={FFH_logo} alt="" />
-                    </a>
+                    </Link>
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -78,21 +78,23 @@ function Header() {
                         {isLoggedIn()
                             ?
                             <>
-                                <Link className="btn btn-primary me-2" to='/dashboard'>Dashboard</Link>
+                                <Link className="btn btn-primary me-2" to='/'>Dashboard</Link>
                                 <Link className="btn btn-primary me-2" to="/logout">Logout</Link>
+                                
                             </>
                             :
                             <>
                                 <Link className="btn btn-primary me-2" to="/login">Login</Link>
                                 <Link className="btn btn-primary me-2" to="/register">Register</Link>
+                                
 
                             </>
                         }
                         
-                        <button className="btn btn-danger" type="submit">
+                        <Link className="btn btn-danger" to="/cart/">
                             <i className="fas fa-shopping-cart" />{" "}
                             <span id="cart-total-items">4</span>
-                        </button>
+                        </Link>
                     </div>
 
 

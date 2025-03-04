@@ -68,6 +68,11 @@ export const logout = () => {
     Cookies.remove("refresh_token")
     useAuthStore.getState().setUser(null)
 
+    Toast.fire({
+        icon: 'success',
+        title:'Logout Successful'
+    })
+
 }
 
 export const setUser = async () => {
@@ -118,10 +123,11 @@ export const getRefreshToken = async () => {
 export const isAccessTokenExpired = (accessToken) => {
     try {
         const decodedToken = jwtDecode(accessToken)
-        return decodedToken.exp < Data.now() / 100
+        return decodedToken.exp < Date.now() / 1000
     } catch (error) {
         console.log(error);
         return true
     }
 }
+
 
