@@ -204,8 +204,8 @@ export default function Products() {
                               {product.size?.map((s, index) => (
                                 <li>
                                   <button onClick={(e) => handleSizeButtonClick(e, product.id, s.name)} 
-                                    className='btn btn-secondary btn-sm me-2 mb-1'>
-                                    XXL
+                                    className='btn btn-secondary m-1 size_button'>
+                                    {s.name}
                                   </button>
                                 </li>
                               ))}

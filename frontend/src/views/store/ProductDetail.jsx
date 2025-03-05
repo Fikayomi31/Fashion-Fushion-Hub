@@ -210,12 +210,12 @@ function ProductDetail() {
                             {/* Size */}
                             {size.length > 0 &&
                                 <>
-                                    <h6>Size: <span>{sizeValue}</span></h6>
+                                    
                                     <div className='col-md-6 mb-4'>
                                         <div className='d-flex'>
                                             {size?.map((s, index) => (
                                                 <div>
-                                                    <input  type='hidden' className='size_name' value={s.name} name='' id='' />
+                                                    <input  type='hidden' className='size_name' value={s.name}/>
                                                     <button className='btn btn-secondary m-1 size_button' type='button' onClick={handleSizeButtonClick} >{s.name}</button>
                                                 </div>
                                             ))}
