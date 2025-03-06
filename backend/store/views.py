@@ -149,7 +149,7 @@ class CartDetailView(generics.RetrieveAPIView):
             'shipping': total_shipping,
             'tax': total_tax,
             'sub_total': total_sub_total,
-            'total_total': total_total,
+            'total': total_total,
         }
 
         return Response(data)

@@ -56,13 +56,15 @@ function Cart() {
 
   const handleQtyChange = (event, product_id) => {
     const quantity = event.target.value
+    console.log(quantity)
+    console.log(product_id)
 
     setProductQuantities((preQunatities) => ({
         ...preQunatities,
         [product_id]:quantity
     }))
   }
- 
+  
   return (
     <div>
       <main className='mt-6'>
@@ -134,13 +136,15 @@ function Cart() {
                             <div className='col-md-2 mb-4 mb-md-0'>
                                 <div className='form-outline d-flex mb-4'>
                                     
-                                    <input type='number'
+                                <input
+                                        type='number'
                                         id='typeNumber'
                                         className='form-control'
-                                        defaultValue={1}
                                         value={productQuantities[c.product?.id] || c.qty}
+                                        defaultValue={1}
                                         min={1}
-                                        onChange={(e) => handleQtyChange(e, c.product_id)}
+                                        onChange={(e) => handleQtyChange(e, c.product.id)}
+                                        
                                     />
                                     <button className='btn btn-primary ms-2'><i className='fas fa-rotate-right'></i></button>
                                     
