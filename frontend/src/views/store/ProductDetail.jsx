@@ -13,8 +13,6 @@ const Toast = Swal.mixin({
   showConfirmButton:false,
   timer:1500,
   timerProgressBar:true
-
-
 })
 
 function ProductDetail() {

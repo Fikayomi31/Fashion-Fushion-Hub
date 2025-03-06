@@ -2,6 +2,17 @@ import React, { useEffect, useState } from 'react'
 import apiInstance from '../../utils/axios'
 import UserData from '../plugin/UserData'
 import CardID from '../plugin/CardID'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+  toast:true,
+  position:'top',
+  showConfirmButton:false,
+  timer:1500,
+  timerProgressBar:true
+
+
+})
 
 
 function Cart() {
@@ -56,15 +67,39 @@ function Cart() {
 
   const handleQtyChange = (event, product_id) => {
     const quantity = event.target.value
-    console.log(quantity)
-    console.log(product_id)
 
-    setProductQuantities((preQunatities) => ({
-        ...preQunatities,
+    setProductQuantities((prevQuantities) => ({
+        ...prevQuantities,
         [product_id]:quantity
     }))
   }
   
+  const updateCart = async (product_id, price,size, color, shipping_amount, currentAddress) => {
+    const qtyValue = productQuantities[product_id]
+    
+    const formdata = new FormData()
+    formdata.append('product_id', product_id)
+    formdata.append('user_id', userData?.user_id)
+    formdata.append('qty', qtyValue)
+    formdata.append('price', price)
+    formdata.append('shipping_amount', shipping_amount)
+    formdata.append('country', currentAddress)
+    formdata.append('size', size)
+    formdata.append('color', color)
+    formdata.append('cart_id', cart_id)
+
+    const response = await apiInstance.post('cart/', formdata)
+    console.log(response.data)
+
+    fetchCartData(cart_id, userData?.user_id)
+    fetchCartTotal(cart_id, userData?.user_id)
+
+    Toast.fire({
+        icon:"success",
+        title: response.data.message
+    })
+  }
+
   return (
     <div>
       <main className='mt-6'>
@@ -138,22 +173,21 @@ function Cart() {
                                     
                                 <input
                                         type='number'
-                                        id='typeNumber'
                                         className='form-control'
                                         value={productQuantities[c.product?.id] || c.qty}
-                                        defaultValue={1}
+                                        
                                         min={1}
                                         onChange={(e) => handleQtyChange(e, c.product.id)}
                                         
                                     />
-                                    <button className='btn btn-primary ms-2'><i className='fas fa-rotate-right'></i></button>
+                                    <button onClick={() => updateCart(c.product.id, c.price, c.size, c.color, c.shipping_amount, c.currentAddress)} className='btn btn-primary ms-2'><i className='fas fa-rotate-right'></i></button>
                                     
                                 </div>
                                 <h5 className='mb-2'>
-                                    <p>Sub Total</p>
-                                    <s className='text-muted me-2 small align-middle'>
+                                    <p className='text-muted me-2 small align-middle'>Sub Total:</p>
+                                    <span className='text-muted me-2 small align-middle'>
                                        ${c.sub_total}
-                                    </s>
+                                    </span>
                                     
                                 </h5>
                                
