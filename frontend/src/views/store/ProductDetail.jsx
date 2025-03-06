@@ -210,7 +210,7 @@ function ProductDetail() {
                             {/* Size */}
                             {size.length > 0 &&
                                 <>
-                                    
+                                    <h6>Size: <span>{sizeValue}</span></h6>  
                                     <div className='col-md-6 mb-4'>
                                         <div className='d-flex'>
                                             {size?.map((s, index) => (
@@ -221,12 +221,8 @@ function ProductDetail() {
                                             ))}
                                         </div>
                                     </div>
-
-                                </>
-                            
-                            }
-                            
-
+                                </>                            
+                            }                            
                             {/* Color */}
                             {color.length > 0 &&
                                 <>

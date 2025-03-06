@@ -6,7 +6,8 @@ import CardID from '../plugin/CardID'
 
 function Cart() {
   const [cart, setCart] = useState([])
-  console.log(cart)
+  const [cartTotal, setCartTotal] = useState([])
+  const [productQuantities, setProductQuantities] = useState('')
 
   const userData = UserData()
   const cart_id = CardID()
@@ -14,27 +15,54 @@ function Cart() {
 
   const fetchCartData = (cartId, userId) => {
     const url = userId ? `cart-list/${cartId}/${userId}/` : `cart-list/${cartId}/`
-    console.log(url)
     apiInstance.get(url).then((res) => {
         setCart(res.data)
 
     })
   }
+
+  const fetchCartTotal = (cartId, userId) => {
+    const url = userId ? `cart-detail/${cartId}/${userId}/` : `cart-detail/${cartId}/`
+    apiInstance.get(url).then((res) => {
+        setCartTotal(res.data)
+
+    })
+  }
+
   if (cart_id !== null || cart_id !== undefined) {
     if (userData !== undefined) {
         // Send Cart Data with userId and cartId
         useEffect(() => {
             fetchCartData(cart_id, userData?.user_id)
+            fetchCartTotal(cart_id, userData?.user_id)
+
         }, [])
     } else {
         // Send cart data with 
         useEffect(() => {
             fetchCartData(cart_id, null)
+            fetchCartTotal(cart_id, null)
         }, [])
 
     }
   }
+  useEffect(() => {
+    const initialQuantities = {}
+    cart.forEach((c) => {
+        initialQuantities[c.product?.id] = c.qty
+    })
+    setProductQuantities(initialQuantities)
+  }, [cart])
 
+  const handleQtyChange = (event, product_id) => {
+    const quantity = event.target.value
+
+    setProductQuantities((preQunatities) => ({
+        ...preQunatities,
+        [product_id]:quantity
+    }))
+  }
+ 
   return (
     <div>
       <main className='mt-6'>
@@ -110,27 +138,27 @@ function Cart() {
                                         id='typeNumber'
                                         className='form-control'
                                         defaultValue={1}
-                                        value={c.qty}
+                                        value={productQuantities[c.product?.id] || c.qty}
                                         min={1}
+                                        onChange={(e) => handleQtyChange(e, c.product_id)}
                                     />
                                     <button className='btn btn-primary ms-2'><i className='fas fa-rotate-right'></i></button>
                                     
                                 </div>
                                 <h5 className='mb-2'>
+                                    <p>Sub Total</p>
                                     <s className='text-muted me-2 small align-middle'>
-                                        $119
+                                       ${c.sub_total}
                                     </s>
-                                    <span className='align-middle'>$119</span>
+                                    
                                 </h5>
-                                <p className='text-danger'>
-                                    <small>You save 12%</small>
-                                </p>
+                               
                             </div>
                         </div>
                       ))}
 
                       {cart.length < 1 &&
-                        <h4>Your is Empty</h4>
+                        <h4>Your Cart is Empty</h4>
                       
                       }
                       
@@ -234,27 +262,24 @@ function Cart() {
                   <div className="col-lg-4 mb-4 mb-md-0">
                     {/* Section: Summary */}
                     <section className="shadow-4 p-4 rounded-5 mb-4">
-                    <h5 className="mb-3">Cart Summary</h5>
+                    <h5 className="mb-5">Cart Summary</h5>
                         <div className="d-flex justify-content-between mb-3">
                             <span>Subtotal </span>
-                            <span>$345</span>
+                            <span>${cartTotal.sub_total?.toFixed(2)}</span>
                         </div>
                         <div className="d-flex justify-content-between">
                             <span>Shipping </span>
-                            <span>$87</span>
+                            <span>${cartTotal.shipping?.toFixed(2)}</span>
                         </div>
                         <div className="d-flex justify-content-between">
                             <span>Tax </span>
-                            <span>$89</span>
+                            <span>${cartTotal.tax?.toFixed(2)}</span>
                         </div>
-                        <div className="d-flex justify-content-between">
-                            <span>Servive Fee </span>
-                            <span>$9</span>
-                        </div>
+                        
                         <hr className="my-4" />
                         <div className="d-flex justify-content-between fw-bold mb-5">
                             <span>Total </span>
-                            <span>$89</span>
+                            <span>${cartTotal.total?.toFixed(2)}</span>
                         </div>
                             
                             <button
