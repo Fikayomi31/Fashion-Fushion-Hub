@@ -239,6 +239,8 @@ class CartOrder(models.Model):
     address = models.CharField(max_length=100, null=True, blank=True)
     city =  models.CharField(max_length=100, null=True, blank=True)
     state =  models.CharField(max_length=100, null=True, blank=True)
+    country =  models.CharField(max_length=100, null=True, blank=True)
+
 
     oid = ShortUUIDField(unique=True, length=10, alphabet='abcde12345') 
     date = models.DateTimeField(auto_now_add=True)
