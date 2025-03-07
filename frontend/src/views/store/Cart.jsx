@@ -20,6 +20,16 @@ function Cart() {
   const [cartTotal, setCartTotal] = useState([])
   const [productQuantities, setProductQuantities] = useState('')
 
+  const [fullName, setFullName] = useState('')  
+  const [email, setEmail] = useState('')
+  const [mobile, setMobile] = useState('')
+  
+  const [address, setAddress] = useState('')      
+  const [city, setCity] = useState('')  
+  const [state, setState] = useState('')  
+  const [country, setCountry] = useState('') 
+
+
   const userData = UserData()
   const cart_id = CardID()
 
@@ -100,14 +110,66 @@ function Cart() {
     })
   }
 
-  const handleDeleteCartItem = (itemId) => {
+  const handleDeleteCartItem =async (itemId) => {
     const url = userData?.user_id
         ? `cart-delete/${cart_id}/${itemId}/${userData?.user_id}/`
         : `cart-delete/${cart_id}/${itemId}/`
+    try {
+        await apiInstance.delete(url)
 
-        apiInstance.delete(url)
+        fetchCartData(cart_id, userData?.user_id)
+        fetchCartTotal(cart_id, userData?.user_id)
+
+        Toast.fire({
+            icon:"success",
+            title: "Item Removed From Cart"
+        })
+    } catch (error) {
+        console.log(error)
+    }
+           
 }
 
+const handleChange = (event) => {
+    const {name, value} = event.target
+
+    switch (name) {
+        case 'fullName':
+            setFullName(value)
+            break
+
+        case 'email':
+            setEmail(value)
+            break
+
+        case 'mobile':
+            setMobile(value)
+            break
+        
+        case 'address':
+            setAddress(value)
+            break
+
+        case 'city':
+            setCity(value)
+            break
+        
+        case 'state':
+            setState(value)
+            break
+        case 'country':
+            setCountry(value)
+            break
+
+        default:
+            break      
+    }
+
+}
+
+const createOrder = () => {
+
+}
 
   return (
     <div>
@@ -211,7 +273,7 @@ function Cart() {
                       
                     </section>
                     {cart?.length > 0 &&                    
-                        <form>
+                        <div>
                             <h5 className="mb-4 mt-4">Contact Information</h5>
                             {/* 2 column grid layout with text inputs for the first and last names */}
                             <div className='row mb-4'>
@@ -223,6 +285,9 @@ function Cart() {
                                         id=""
                                         name='fullName'
                                         className="form-control"
+                                        onChange={handleChange}
+                                        value={fullName}
+
                                     />
                                     </div>
                                 </div>
@@ -236,6 +301,8 @@ function Cart() {
                                                 id="form6Example1"
                                                 className="form-control"
                                                 name='email'
+                                                onChange={handleChange}
+                                                value={email}
                                                 
                                             />
                                     </div>
@@ -248,6 +315,8 @@ function Cart() {
                                                 id="form6Example1"
                                                 className="form-control"
                                                 name='mobile'
+                                                onChange={handleChange}
+                                                value={mobile}
                                             />
                                     </div>
                                 </div>
@@ -263,6 +332,8 @@ function Cart() {
                                                 id="form6Example1"
                                                 className="form-control"
                                                 name='address'
+                                                onChange={handleChange}
+                                                value={address}
                                             />
                                     </div>
                                 </div>
@@ -274,6 +345,8 @@ function Cart() {
                                                 id="form6Example1"
                                                 className="form-control"
                                                 name='city'
+                                                onChange={handleChange}
+                                                value={city}
                                             />
                                     </div>
                                 </div>
@@ -286,6 +359,8 @@ function Cart() {
                                                 id="form6Example1"
                                                 className="form-control"
                                                 name='state'
+                                                onChange={handleChange}
+                                                value={city}
                                             />
                                     </div>
                                 </div>
@@ -297,13 +372,15 @@ function Cart() {
                                                 id="form6Example1"
                                                 className="form-control"
                                                 name='country'
+                                                onChange={handleChange}
+                                                value={country}
                                             
                                             />
                                     </div>
                                 </div>
                             </div>
 
-                        </form>
+                        </div>
                     }
                   </div>
                   <div className="col-lg-4 mb-4 mb-md-0">
@@ -332,6 +409,7 @@ function Cart() {
                             <button
                                 
                                 className="btn btn-primary btn-rounded w-100"
+                                onClick={createOrder} 
                             >
                                 Got to checkout
                             </button>
