@@ -196,7 +196,7 @@ class Coupon(models.Model):
 class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    tax_fee = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
+    tax = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     shipping_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0.0) 
     sub_total = models.DecimalField(decimal_places=2, max_digits=12, default=0.0) 
@@ -227,7 +227,7 @@ class CartOrder(models.Model):
     payment_status = models.CharField(max_length=100, choices=PAYMENT_STATUS, default='Processing')
 
     #coupon
-    inittial_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    initial_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     saved  = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
     #Bio data
@@ -263,17 +263,17 @@ class CartOrderItem(models.Model):
     tax = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     sub_total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
-    shipping_fee = models.DecimalField(max_digits=10, decimal_places=2)
+    shipping_amount= models.DecimalField(max_digits=10, decimal_places=2)
     
     color = models.CharField(max_length=100, null=True, blank=True)
     size = models.CharField(max_length=100, null=True, blank=True)
     qty = models.IntegerField(default=0)
     
     #coupon
-    inittial_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    initial_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     saved  = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     oid = ShortUUIDField(unique=True, length=6, max_length=20, alphabet='1234567890')
-    date = models.DateTimeField(timezone.now)
+    date = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['-date']

@@ -159,7 +159,7 @@ class CartDetailView(generics.RetrieveAPIView):
         return cart_item.shipping_amount
     
     def calculate_tax(self, cart_item):
-        return cart_item.tax_fee
+        return cart_item.tax
     
     def calculate_sub_total(self, cart_item):
         return cart_item.sub_total
@@ -234,14 +234,14 @@ class CreateOrderAPIView(generics.CreateAPIView):
                 size=c.size,
                 price=c.price,
                 sub_total=c.sub_total,
-                shiping_amount=c.shipping_amount,
-                tax_fee = c.tax_fee,
+                shipping_amount=c.shipping_amount,
+                tax = c.tax,
                 total=c.total,
                 initial_cost=c.total,
             )
 
             total_shipping += Decimal(c.shipping_amount)
-            total_tax += Decimal(c.tax_fee)
+            total_tax += Decimal(c.tax)
             total_sub_total += Decimal(c.sub_total)
             total_initial_cost += Decimal(c.total)
             total_total += Decimal(c.total)
@@ -250,8 +250,8 @@ class CreateOrderAPIView(generics.CreateAPIView):
 
         order.sub_total = total_sub_total
         order.shipping_amount = total_shipping
-        order.tax_fee = total_tax
-        order.initial_total = total_initial_cost
+        order.tax = total_tax
+        order.initial_cost = total_initial_cost
         order.total = total_total
 
         order.save()
