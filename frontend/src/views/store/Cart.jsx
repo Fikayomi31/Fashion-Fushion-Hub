@@ -3,6 +3,8 @@ import apiInstance from '../../utils/axios'
 import UserData from '../plugin/UserData'
 import CardID from '../plugin/CardID'
 import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom'
+
 
 const Toast = Swal.mixin({
   toast:true,
@@ -33,6 +35,7 @@ function Cart() {
   const userData = UserData()
   const cart_id = CardID()
 
+  const navigate = useNavigate()
 
   const fetchCartData = (cartId, userId) => {
     const url = userId ? `cart-list/${cartId}/${userId}/` : `cart-list/${cartId}/`
@@ -171,25 +174,33 @@ const createOrder = async () => {
 
     if (!fullName || !email || !mobile || !address || !city || !country) {
         Swal.fire({
-            icon: 'Warning',
+            icon: 'warning',
             title: 'Missing Fields!',
             text: "All firelds ar required before checkout!"
         })
+    } else {
+        try {
+            const formdata = new FormData()
+            formdata.append("full_name", fullName)
+            formdata.append("email", email)
+            formdata.append("mobile", mobile)
+            formdata.append("address", address)
+            formdata.append("city", city)
+            formdata.append("state", state)
+            formdata.append("country", country)
+            formdata.append("cart_id", cart_id)
+            formdata.append("user_id", UserData ? userData?.user_id : 0)
+
+            const response = await apiInstance.post('create-order/', formdata)
+            console.log('Full response:', response.data);
+
+            navigate(`/checkout/${response.data.order_oid}/`)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
-    const formdata = new FormData()
-    formdata.append("full_name", fullName)
-    formdata.append("email", email)
-    formdata.append("mobile", mobile)
-    formdata.append("address", address)
-    formdata.append("city", city)
-    formdata.append("state", state)
-    formdata.append("country", country)
-    formdata.append("cart_id", cart_id)
-    formdata.append("user_id", UserData ? userData?.user_id : 0)
-
-    const response = await apiInstance.post('create-order/', formdata)
-    console.log(response.data.message)
+    
 }
 
   return (

@@ -1,5 +1,6 @@
 from itertools import product
 from operator import add
+from unicodedata import lookup
 from django.shortcuts import render
 
 from store.models import CartOrder, CartOrderItem, Product, Tax, Category, Cart
@@ -257,3 +258,13 @@ class CreateOrderAPIView(generics.CreateAPIView):
         order.save()
 
         return Response({"message": 'Order Created Successfully', 'order_oid':order.oid}, status=status.HTTP_201_CREATED)
+
+class CheckoutView(generics.RetrieveAPIView):
+    serializer_class = CartOrderSerializer
+    lookup_field = 'order_id'
+
+    def get_object(self):
+        order_id = self.kwargs['order_id']
+        order = CartOrder.objects.get(order_id=order_id)
+        return order
+

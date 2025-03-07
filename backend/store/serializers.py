@@ -106,9 +106,9 @@ class CartOrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-            super(CartOrderSerializer, self).__int__(*args, **kwargs)
+            super(CartOrderSerializer, self).__init__(*args, **kwargs)
 
-            request = self.content.get('request')
+            request = self.context.get('request')
 
             if request and request.method == "POST":
                 self.Meta.depth = 0
