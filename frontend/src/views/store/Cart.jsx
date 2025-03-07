@@ -100,6 +100,15 @@ function Cart() {
     })
   }
 
+  const handleDeleteCartItem = (itemId) => {
+    const url = userData?.user_id
+        ? `cart-delete/${cart_id}/${itemId}/${userData?.user_id}/`
+        : `cart-delete/${cart_id}/${itemId}/`
+
+        apiInstance.delete(url)
+}
+
+
   return (
     <div>
       <main className='mt-6'>
@@ -154,9 +163,9 @@ function Cart() {
                                     </p>
                                 }
                                 <p className='mb-4'>
-                                    <a href='' className='text-danger pe-3 border-end'>
+                                    <a onClick={() => handleDeleteCartItem(c.id)} href='#' className='text-danger pe-3 border-end'>
                                         <small>
-                                            <i className='fas fa-trash me-2'/>
+                                            <i  className='fas fa-trash me-2'/>
                                             Remove
                                         </small>
                                     </a>
