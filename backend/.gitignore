@@ -5,7 +5,7 @@
 # Byte-compiled files
 *.pyc
 *.pyo
-__pycache__/
+/__pycache__/
 
 
 # Static files and uploads
