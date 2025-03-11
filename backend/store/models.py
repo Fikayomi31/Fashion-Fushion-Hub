@@ -221,7 +221,6 @@ class CartOrder(models.Model):
     tax = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     payment_id = models.CharField(max_length=1000, null=True, blank=True)
-    order_id = ShortUUIDField(length=6, max_length=20, alphabet='1234567890')
 
     order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='Pending')
     payment_status = models.CharField(max_length=100, choices=PAYMENT_STATUS, default='Processing')
@@ -242,14 +241,18 @@ class CartOrder(models.Model):
     country =  models.CharField(max_length=100, null=True, blank=True)
 
 
-    oid = ShortUUIDField(unique=True, length=10, alphabet='abcde12345') 
+    oid = ShortUUIDField(length=10, max_length=25, alphabet="abcdefghijklmnopqrstuvxyz")
     date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-date']
+        verbose_name_plural = "Cart Order"
 
     def __str__(self):
-        return self.order_id
+        return self.oid
+    
+    def orderitem(self):
+        return CartOrderItem.objects.filter(order=self)
     
 
 class CartOrderItem(models.Model):
@@ -272,14 +275,18 @@ class CartOrderItem(models.Model):
     #coupon
     initial_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     saved  = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    oid = ShortUUIDField(unique=True, length=6, max_length=20, alphabet='1234567890')
+    oid = ShortUUIDField(length=10, max_length=25, alphabet="abcdefghijklmnopqrstuvxyz")
     date = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['-date']
 
+    # Method to return a formatted order ID
+    def order_id(self):
+        return f"Order ID #{self.order.oid}"
+
     def __str__(self):
-        return self.order_id
+        return self.oid
 
 
 class ProductFaq(models.Model):

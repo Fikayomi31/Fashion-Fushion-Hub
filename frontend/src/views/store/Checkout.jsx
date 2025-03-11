@@ -1,6 +1,21 @@
-import React from 'react'
+import { useState, useEffect} from 'react'
+import apiInstance from '../../utils/axios'
+import { useParams, useNavigate } from 'react-router-dom'
+
 
 function Checkout() {
+    const [order, setOrder] = useState([])
+
+    const param = useParams()
+    console.log(param)
+
+    useEffect(() => {
+        apiInstance.get(`checkout/${param.order_oid}/`).then((res) => {
+            console.log(res.data)
+        })
+    }, [])
+
+
   return (
    <main className='mb-4 mt-4'>
         <div className='container'>

@@ -9,6 +9,7 @@ from userauths.models import User
 from store.models import Tax
 
 from decimal import Decimal
+from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -261,10 +262,10 @@ class CreateOrderAPIView(generics.CreateAPIView):
 
 class CheckoutView(generics.RetrieveAPIView):
     serializer_class = CartOrderSerializer
-    lookup_field = 'order_id'
+    lookup_field = 'order_oid'
 
     def get_object(self):
-        order_id = self.kwargs['order_id']
-        order = CartOrder.objects.get(order_id=order_id)
+        order_oid = self.kwargs['order_oid']
+        print("Fetching order with ID:", order_oid)  # Debug: Check the order_id
+        order = CartOrder.objects.get(oid=order_oid)
         return order
-

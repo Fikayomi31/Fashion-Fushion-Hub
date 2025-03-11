@@ -42,8 +42,8 @@ class CouponAdmin(admin.ModelAdmin):
     search_fields = ['code', 'vendor__name']
 
 class CartOrderAdmin(admin.ModelAdmin):
-    list_display = ['order_id', 'customer', 'total', 'payment_status', 'order_status', 'date']
-    search_fields = ['order_id', 'customer__username']
+    list_display = ['oid', 'customer', 'total', 'payment_status', 'order_status', 'date']
+    search_fields = ['oid', 'customer__username']
     list_editable = ['payment_status', 'order_status']
 
 class CartOrderItemAdmin(admin.ModelAdmin):

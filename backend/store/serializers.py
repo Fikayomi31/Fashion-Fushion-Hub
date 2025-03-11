@@ -1,3 +1,4 @@
+from typing import ReadOnly
 from rest_framework import serializers
 
 from store.models import Category, Notification, ProductFaq, Size, Gallery, Specification,Product, Cart, CartOrder, Color, CartOrderItem, Review, Coupon, Gallery
@@ -98,8 +99,25 @@ class CartSerializer(serializers.ModelSerializer):
             else:
                 self.Meta.depth = 3
 
+class CartOrderItemSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CartOrderItem
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+            super(CartOrderItemSerializer, self).__init__(*args, **kwargs)
+
+            request = self.context.get('request')
+
+            if request and request.method == "POST":
+                self.Meta.depth = 0
+            else:
+                self.Meta.depth = 3
+
 
 class CartOrderSerializer(serializers.ModelSerializer):
+    orderitem = CartOrderItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = CartOrder
@@ -114,23 +132,6 @@ class CartOrderSerializer(serializers.ModelSerializer):
                 self.Meta.depth = 0
             else:
                 self.Meta.depth = 3
-
-class CartOrderItemSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = CartOrderItem
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-            super(CartOrderItemSerializer, self).__int__(*args, **kwargs)
-
-            request = self.content.get('request')
-
-            if request and request.method == "POST":
-                self.Meta.depth = 0
-            else:
-                self.Meta.depth = 3
-
 class ProductFaqSerializer(serializers.ModelSerializer):
 
     class Meta:
