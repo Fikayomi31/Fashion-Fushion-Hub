@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useAuthStore } from "../../store/auth";
 import FFH_logo from '../../assets/header/FFH_logo.webp'
 import { Link } from "react-router-dom";
+import { CartContext } from "../plugin/Context";
 
 
 function Header() {
+    const cartCount = useContext(CartContext)
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const user = useAuthStore((state) => state.user);
 
@@ -91,10 +93,10 @@ function Header() {
                             </>
                         }
                         
-                        <Link className="btn btn-danger" to="/cart/">
-                            <i className="fas fa-shopping-cart" />{" "}
-                            <span id="cart-total-items">4</span>
+                       <Link className="btn btn-danger" to="/cart/"><i className='fas fa-shopping-cart'></i>
+                            <span id='cart-total-items'>{cartCount || 0}</span>
                         </Link>
+
                     </div>
 
 

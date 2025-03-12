@@ -20,7 +20,7 @@ const Toast = Swal.mixin({
 function Cart() {
   const [cart, setCart] = useState([])
   const [cartTotal, setCartTotal] = useState([])
-  const [productQuantities, setProductQuantities] = useState('')
+  const [productQuantities, setProductQuantities] = useState()
 
   const [fullName, setFullName] = useState('')  
   const [email, setEmail] = useState('')
@@ -33,7 +33,7 @@ function Cart() {
 
 
   const userData = UserData()
-  const cart_id = CardID()
+  let cart_id = CardID()
 
   const navigate = useNavigate()
 
@@ -54,36 +54,34 @@ function Cart() {
   }
 
   if (cart_id !== null || cart_id !== undefined) {
-    if (userData !== undefined) {
-        // Send Cart Data with userId and cartId
-        useEffect(() => {
-            fetchCartData(cart_id, userData?.user_id)
-            fetchCartTotal(cart_id, userData?.user_id)
-
-        }, [])
-    } else {
-        // Send cart data with 
-        useEffect(() => {
-            fetchCartData(cart_id, null)
-            fetchCartTotal(cart_id, null)
-        }, [])
-
+          if (userData !== undefined) {
+              useEffect(() => {
+                  fetchCartData(cart_id, userData.user_id);
+                  fetchCartTotal(cart_id, userData.user_id);
+              }, []);
+          } else {
+              useEffect(() => {
+                  fetchCartData(cart_id, null);
+                  fetchCartTotal(cart_id, null);
+              }, []);
+          }
+      } else {
+          window.location.href("/");
     }
-  }
   useEffect(() => {
     const initialQuantities = {}
     cart.forEach((c) => {
         initialQuantities[c.product?.id] = c.qty
     })
     setProductQuantities(initialQuantities)
-  }, [cart])
+  }, productQuantities)
 
   const handleQtyChange = (event, product_id) => {
     const quantity = event.target.value
 
     setProductQuantities((prevQuantities) => ({
         ...prevQuantities,
-        [product_id]:quantity
+        [product_id]: quantity
     }))
   }
   

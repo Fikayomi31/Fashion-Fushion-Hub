@@ -24,11 +24,6 @@ function CardID() {
     }
     return existingRandomString
 
-    return (
-        <div>
-      
-        </div>
-    )
 }
 
 

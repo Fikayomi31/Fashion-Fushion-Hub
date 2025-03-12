@@ -1,10 +1,11 @@
+from dis import disco
 from itertools import product
 from operator import add
 from unicodedata import lookup
 from django.shortcuts import render
 
-from store.models import CartOrder, CartOrderItem, Product, Tax, Category, Cart
-from store.serializers import CartOrderSerializer, ProductSerializer, CategorySerializer, CartSerializer
+from store.models import CartOrder, CartOrderItem, Coupon, Product, Tax, Category, Cart
+from store.serializers import CartOrderSerializer, CouponSerializer, ProductSerializer, CategorySerializer, CartSerializer
 from userauths.models import User
 from store.models import Tax
 
@@ -269,3 +270,41 @@ class CheckoutView(generics.RetrieveAPIView):
         print("Fetching order with ID:", order_oid)  # Debug: Check the order_id
         order = CartOrder.objects.get(oid=order_oid)
         return order
+
+class CouponAPIView(generics.CreateAPIView):
+    serializer_class = CouponSerializer
+    queryset = Coupon.objects.all()
+    perimission_classes = [AllowAny]
+
+    def create(self, request):
+        payload = request.data
+
+        order_oid = payload['order_oid']
+        coupon_code = payload['coupon_code']
+
+        order = CartOrder.objects.get(oid=order_oid)
+        coupon = Coupon.objects.get(code=coupon_code)
+
+        if coupon:
+            order_items = CartOrderItem.objects.filter(order=order, vendor=coupon.vendor)
+            if order_items:
+                for i in order_items:
+                    if not coupon in i.coupon.all():
+
+                        discount = i.total * coupon.discount / 100
+                        i.total -= discount
+                        i.sub_total -= discount
+                        i.saved += discount
+                        i.save()
+                        order.save()
+
+                        return Response({"message": 'Coupon Activated'}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({"message": 'Coupon Already Activated'}, status=status.HTTP_200_OK)
+                
+            else:
+                return Response({"message": 'Coupon Already Activated'}, status=status.HTTP_200_OK)
+            
+        else:
+             return Response({"message": 'Coupon Already Activated'}, status=status.HTTP_200_OK)
+        
