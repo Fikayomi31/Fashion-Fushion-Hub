@@ -139,9 +139,9 @@ class ProductFaqSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-            super(ProductFaqSerializer, self).__int__(*args, **kwargs)
+            super(ProductFaqSerializer, self).__init__(*args, **kwargs)
 
-            request = self.content.get('request')
+            request = self.context.get('request')
 
             if request and request.method == "POST":
                 self.Meta.depth = 0
@@ -155,9 +155,9 @@ class VendorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-            super(VendorSerializer, self).__int__(*args, **kwargs)
+            super(VendorSerializer, self).__init__(*args, **kwargs)
 
-            request = self.content.get('request')
+            request = self.context.get('request')
 
             if request and request.method == "POST":
                 self.Meta.depth = 0
@@ -171,9 +171,9 @@ class Reviewerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-            super(Reviewerializer, self).__int__(*args, **kwargs)
+            super(Reviewerializer, self).__init__(*args, **kwargs)
 
-            request = self.content.get('request')
+            request = self.context.get('request')
 
             if request and request.method == "POST":
                 self.Meta.depth = 0
@@ -187,9 +187,9 @@ class CouponSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-            super(CouponSerializer, self).__int__(*args, **kwargs)
+            super(CouponSerializer, self).__init__(*args, **kwargs)
 
-            request = self.content.get('request')
+            request = self.context.get('request')
 
             if request and request.method == "POST":
                 self.Meta.depth = 0
@@ -203,9 +203,9 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-            super(NotificationSerializer, self).__int__(*args, **kwargs)
+            super(NotificationSerializer, self).__init__(*args, **kwargs)
 
-            request = self.content.get('request')
+            request = self.context.get('request')
 
             if request and request.method == "POST":
                 self.Meta.depth = 0

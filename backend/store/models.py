@@ -186,12 +186,12 @@ class Color(models.Model):
 class Coupon(models.Model):
     vendor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="coupons_provided")
     user_by = models.ManyToManyField(User, blank=True, related_name="coupons_used")
-    code = models.CharField(max_length=100)
+    coupon_code = models.CharField(max_length=100)
     discount = models.IntegerField(default=1)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.code
+        return self.coupon_code
     
 class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

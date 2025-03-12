@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 
 function Checkout() {
     const [order, setOrder] = useState([])
-
+    const [couponCode, setCouponCode] = useState("")
     const param = useParams()
     console.log(param)
 
@@ -14,6 +14,20 @@ function Checkout() {
             console.log(res.data)
         })
     }, [])
+
+    const applyCoupon = async () => {
+        const formdata = new FormData()
+        formdata.append('order_oid', order.oid)
+        formdata.append('coupon_data', couponCode)
+        
+        try {
+            const response = await apiInstance.post('coupon/', formdata)
+            console.log(response.data.message)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
 
   return (
@@ -152,19 +166,31 @@ function Checkout() {
                             <hr className="my-4" />
                             <div className="d-flex justify-content-between fw-bold mb-5">
                                 <span>Total </span>
-                                <span>$980</span>
+                                <span>${order.total}</span>
                             </div>
+                            <section className='shadow rounded-3 card p-4 mb-4 rounded-5'>
+                                <h5 className='mb-4'>Appl promo Code</h5>
+                                <div className='d-flex align-item-center'>
+                                    <input type='text'
+                                        className='form-control rounded me-1'
+                                        placeholder='Promo code'
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                    />
+                                    <button type='button'
+                                        className='btn btn-sucess btn-rounded overflow-visible'
+                                        onClick={applyCoupon}
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                            </section>
                                 
                                 <button                                    
                                     className="btn btn-primary btn-rounded w-100"           
                                 >
                                     Pay wih Credit Card <i className='fas fa-credit-card'></i>
                                 </button>
-                                <button                                    
-                                    className="btn btn-primary btn-rounded w-100"           
-                                >
-                                    Pay wih Master Card <i className='fas fa-master-card'></i>
-                                </button>
+                                
                                 
                         </section>
                     </div>
