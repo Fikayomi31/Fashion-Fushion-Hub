@@ -272,7 +272,7 @@ class CartOrderItem(models.Model):
     size = models.CharField(max_length=100, null=True, blank=True)
     qty = models.IntegerField(default=0)
     
-    #coupon
+    coupon = models.ManyToManyField("store.Coupon", blank=True)
     initial_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     saved  = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     oid = ShortUUIDField(length=10, max_length=25, alphabet="abcdefghijklmnopqrstuvxyz")

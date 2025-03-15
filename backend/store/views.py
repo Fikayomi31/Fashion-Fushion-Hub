@@ -275,15 +275,21 @@ class CouponAPIView(generics.CreateAPIView):
     serializer_class = CouponSerializer
     queryset = Coupon.objects.all()
     perimission_classes = [AllowAny]
+    def get_object(self):
+        order_oid = self.kwargs.get('order_oid')
+        print("Fetching CartOrder with OID:", order_oid)  # Debugging output
+        order = get_object_or_404(CartOrder, oid=order_oid)  # Safe lookup
+        return order
 
     def create(self, request):
         payload = request.data
 
-        order_oid = payload['order_oid']
-        coupon_code = payload['coupon_code']
+        order_oid = payload.get('order_oid')
+        coupon_code = payload.get('coupon_code')
 
         order = CartOrder.objects.get(oid=order_oid)
-        coupon = Coupon.objects.get(code=coupon_code)
+        coupon = Coupon.objects.filter(coupon_code=coupon_code).first()
+
 
         if coupon:
             order_items = CartOrderItem.objects.filter(order=order, vendor=coupon.vendor)

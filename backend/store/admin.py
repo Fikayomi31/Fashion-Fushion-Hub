@@ -38,8 +38,8 @@ class CartAdmin(admin.ModelAdmin):
     list_filter = ['date', 'product']
 
 class CouponAdmin(admin.ModelAdmin):
-    list_display = ['code', 'vendor', 'discount']
-    search_fields = ['code', 'vendor__name']
+    list_display = ['coupon_code', 'vendor', 'discount']
+    search_fields = ['coupon_code', 'vendor__name']
 
 class CartOrderAdmin(admin.ModelAdmin):
     list_display = ['oid', 'customer', 'total', 'payment_status', 'order_status', 'date']
@@ -62,3 +62,5 @@ admin.site.register(store_model.Cart, CartAdmin)
 admin.site.register(store_model.CartOrder, CartOrderAdmin)
 admin.site.register(store_model.CartOrderItem,CartOrderItemAdmin)
 admin.site.register(store_model.Tax)
+admin.site.register(store_model.Coupon, CouponAdmin)
+

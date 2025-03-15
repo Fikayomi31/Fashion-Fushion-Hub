@@ -1,13 +1,14 @@
 import { useState, useEffect} from 'react'
 import apiInstance from '../../utils/axios'
 import { useParams, useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 
 function Checkout() {
     const [order, setOrder] = useState([])
     const [couponCode, setCouponCode] = useState("")
     const param = useParams()
-    console.log(param)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         apiInstance.get(`checkout/${param.order_oid}/`).then((res) => {
@@ -15,20 +16,51 @@ function Checkout() {
         })
     }, [])
 
-    const applyCoupon = async () => {
+    const appleCoupon = async () => {
+        console.log(couponCode);
+        setLoading(true)
+    
         const formdata = new FormData()
-        formdata.append('order_oid', order.oid)
-        formdata.append('coupon_data', couponCode)
-        
+        formdata.append("order_oid", order.oid)
+        formdata.append("coupon_code", couponCode)
+    
         try {
-            const response = await apiInstance.post('coupon/', formdata)
-            console.log(response.data.message)
+          const response = await axios.post('coupon/', formdata)
+          console.log(response.data);
+          /*if (response.data.message === "Coupon Activated") {
+            setLoading(false)
+    
+            Swal.fire({
+              icon: 'success',
+              title: response.data.message,
+              text: "A new coupon has been applied to your order",
+            })
+          }
+    
+          if (response.data.message === "Coupon Already Activated") {
+            setLoading(false)
+    
+            Swal.fire({
+              icon: 'warning',
+              title: response.data.message,
+              text: "This coupon has been already activated!",
+            })
+          }
+          setCouponCode("")
+            */
         } catch (error) {
-            console.log(error)
-        }
-    }
-
-
+          
+          /*Swal.fire({ Fikayomi31@.
+            icon: 'error',
+            title: error.response.data.message,
+            text: "This coupon does not exist!",
+          })
+          setCouponCode("")*/
+    
+        } 
+    
+      }
+      console.log(appleCoupon)
 
   return (
    <main className='mb-4 mt-4'>
@@ -178,7 +210,7 @@ function Checkout() {
                                     />
                                     <button type='button'
                                         className='btn btn-sucess btn-rounded overflow-visible'
-                                        onClick={applyCoupon}
+                                        onClick={appleCoupon}
                                     >
                                         Apply
                                     </button>
