@@ -1,4 +1,3 @@
-from typing import ReadOnly
 from rest_framework import serializers
 
 from store.models import Category, Notification, ProductFaq, Size, Gallery, Specification,Product, Cart, CartOrder, Color, CartOrderItem, Review, Coupon, Gallery
