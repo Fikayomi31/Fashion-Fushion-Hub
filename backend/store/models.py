@@ -184,14 +184,15 @@ class Color(models.Model):
         return self.name
     
 class Coupon(models.Model):
-    vendor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="coupons_provided")
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, related_name="coupons_provided")
     user_by = models.ManyToManyField(User, blank=True, related_name="coupons_used")
-    coupon_code = models.CharField(max_length=100)
+    code = models.CharField(max_length=100)
     discount = models.IntegerField(default=1)
     date = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.coupon_code
+        return self.code
     
 class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -214,7 +215,7 @@ class Cart(models.Model):
 
 class CartOrder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='customer', blank=True)
-    vendor = models.ManyToManyField(User, blank=True)
+    vendor = models.ManyToManyField(Vendor, blank=True)
     
     sub_total = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
     shipping = models.DecimalField(max_digits=12, default=0.00, decimal_places=2)
@@ -229,6 +230,8 @@ class CartOrder(models.Model):
     initial_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     saved  = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
+    coupons = models.ManyToManyField('store.Coupon', blank=True)
+    
     #Bio data
     full_name = models.CharField(max_length=100, null=True, blank=True)
     email =  models.CharField(max_length=100, null=True, blank=True)

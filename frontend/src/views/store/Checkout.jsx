@@ -7,8 +7,9 @@ import Swal from 'sweetalert2'
 function Checkout() {
     const [order, setOrder] = useState([])
     const [couponCode, setCouponCode] = useState("")
-    const param = useParams()
     const [loading, setLoading] = useState(false)
+    const param = useParams()
+    console.log(param)
 
     useEffect(() => {
         apiInstance.get(`checkout/${param.order_oid}/`).then((res) => {
@@ -16,18 +17,32 @@ function Checkout() {
         })
     }, [])
 
-    const appleCoupon = async () => {
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        switch (name) {
+          case "couponCode":
+            setCouponCode(value)
+            break;
+    
+          default:
+            break;
+        }
+      }
+    
+      const appleCoupon = async () => {
         console.log(couponCode);
         setLoading(true)
-    
+        console.log(order.oid)
+        //const orderOid = order?.oid || param.order_oid;  // Use param as fallback
+
         const formdata = new FormData()
-        formdata.append("order_oid", order.oid)
+        formdata.append("order_oid", param.order_oid)
         formdata.append("coupon_code", couponCode)
     
         try {
-          const response = await axios.post('coupon/', formdata)
-          console.log(response.data);
-          /*if (response.data.message === "Coupon Activated") {
+          const response = await apiInstance.post('coupon/', formdata)
+          console.log(response.data.message);
+          if (response.data.message === "Coupon Activated") {
             setLoading(false)
     
             Swal.fire({
@@ -47,20 +62,21 @@ function Checkout() {
             })
           }
           setCouponCode("")
-            */
+    
         } catch (error) {
-          
-          /*Swal.fire({ Fikayomi31@.
+          console.log(error.response.data.message);
+          setLoading(false)
+          Swal.fire({
             icon: 'error',
             title: error.response.data.message,
             text: "This coupon does not exist!",
           })
-          setCouponCode("")*/
+          setCouponCode("")
     
-        } 
+        }
     
       }
-      console.log(appleCoupon)
+
 
   return (
    <main className='mb-4 mt-4'>
@@ -203,17 +219,19 @@ function Checkout() {
                             <section className='shadow rounded-3 card p-4 mb-4 rounded-5'>
                                 <h5 className='mb-4'>Appl promo Code</h5>
                                 <div className='d-flex align-item-center'>
-                                    <input type='text'
-                                        className='form-control rounded me-1'
-                                        placeholder='Promo code'
-                                        onChange={(e) => setCouponCode(e.target.value)}
-                                    />
-                                    <button type='button'
-                                        className='btn btn-sucess btn-rounded overflow-visible'
-                                        onClick={appleCoupon}
-                                    >
-                                        Apply
-                                    </button>
+                                {loading === true &&
+                                    <>
+                                        <input readOnly value={couponCode} name="couponCode" type="text" className='form-control' style={{ border: "dashed 1px gray" }} placeholder='Enter Coupon Code' id="" />
+                                        <button disabled className='btn btn-success ms-1'><i className='fas fa-spinner fa-spin'></i></button>
+                                    </>
+                                }
+
+                                {loading === false &&
+                                    <>
+                                        <input onChange={handleChange} value={couponCode} name="couponCode" type="text" className='form-control' style={{ border: "dashed 1px gray" }} placeholder='Enter Coupon Code' id="" />
+                                        <button onClick={appleCoupon} className='btn btn-success ms-1'><i className='fas fa-check-circle'></i></button>
+                                    </>
+                      }
                                 </div>
                             </section>
                                 

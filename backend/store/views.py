@@ -4,8 +4,8 @@ from operator import add
 from unicodedata import lookup
 from django.shortcuts import render
 
-from store.models import CartOrder, CartOrderItem, Coupon, Product, Tax, Category, Cart
-from store.serializers import CartOrderSerializer, CouponSerializer, ProductSerializer, CategorySerializer, CartSerializer
+from store.models import CartOrder, CartOrderItem, Coupon, Product, Tax, Category, Cart, Notification
+from store.serializers import CartOrderSerializer, CouponSerializer, ProductSerializer, CategorySerializer, CartSerializer, NotificationSerializer
 from userauths.models import User
 from store.models import Tax
 
@@ -15,6 +15,15 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
+
+def send_notification(user=None, vendor=None, order=None, order_item=None):
+    Notification.objects.create(
+        user=user,
+        vendor=vendor,
+        order=order,
+        order_item=order_item
+    )
 class CategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -275,6 +284,7 @@ class CouponAPIView(generics.CreateAPIView):
     serializer_class = CouponSerializer
     queryset = Coupon.objects.all()
     perimission_classes = [AllowAny]
+
     def get_object(self):
         order_oid = self.kwargs.get('order_oid')
         print("Fetching CartOrder with OID:", order_oid)  # Debugging output
@@ -284,33 +294,38 @@ class CouponAPIView(generics.CreateAPIView):
     def create(self, request):
         payload = request.data
 
-        order_oid = payload.get('order_oid')
-        coupon_code = payload.get('coupon_code')
+        order_oid = payload['order_oid']
+        coupon_code = payload['coupon_code']
 
         order = CartOrder.objects.get(oid=order_oid)
-        coupon = Coupon.objects.filter(coupon_code=coupon_code).first()
+        coupon = Coupon.objects.filter(code=coupon_code).first()
+        print('order:', order)
 
 
         if coupon:
             order_items = CartOrderItem.objects.filter(order=order, vendor=coupon.vendor)
             if order_items:
                 for i in order_items:
+                   
                     if not coupon in i.coupon.all():
-
                         discount = i.total * coupon.discount / 100
                         i.total -= discount
                         i.sub_total -= discount
+                        i.coupon.add(coupon)
                         i.saved += discount
+                        i.applied_coupon = True
+
+                        order.total -= discount
+                        order.sub_total -= discount
+                        order.saved += discount
+
                         i.save()
                         order.save()
-
-                        return Response({"message": 'Coupon Activated'}, status=status.HTTP_200_OK)
+                        return Response( {"message": "Coupon Activated"}, status=status.HTTP_200_OK)
                     else:
-                        return Response({"message": 'Coupon Already Activated'}, status=status.HTTP_200_OK)
-                
-            else:
-                return Response({"message": 'Coupon Already Activated'}, status=status.HTTP_200_OK)
-            
+                        return Response( {"message": "Coupon Already Activated"}, status=status.HTTP_200_OK)
+            return Response( {"message": "Order Item Does Not Exists"}, status=status.HTTP_200_OK)
         else:
-             return Response({"message": 'Coupon Already Activated'}, status=status.HTTP_200_OK)
-        
+            return Response( {"message": "Coupon Does Not Exists"}, status=status.HTTP_404_NOT_FOUND)
+
+            

@@ -1,7 +1,7 @@
 from tabnanny import verbose
 from django.db import models
 from userauths.models import User
-from store.models import Product
+
 from django.db.models import CASCADE
 
 TYPE = (

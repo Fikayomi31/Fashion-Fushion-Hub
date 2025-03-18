@@ -32,9 +32,9 @@ class Vendor(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField(unique=True, max_length=500)
     mobile = models.CharField(max_length=100, help_text='Shop Mobile Number', null=True, blank=True)
     active = models.BooleanField(default=False)
+    slug = models.SlugField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Vendors'
@@ -42,11 +42,11 @@ class Vendor(models.Model):
 
 
     def __str__(self):
-        return str(self.store_name)
+        return str(self.name)
     
     def save(self, *args, **kwargs):
         if self.slug == "" or self.slug == None:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.name)
         super(Vendor, self).save(*args, **kwargs)
 
 
