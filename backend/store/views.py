@@ -259,6 +259,7 @@ class CreateOrderAPIView(generics.CreateAPIView):
             total_total += Decimal(c.total)
 
             order.vendor.add(c.product.vendor)
+            print(c.product.vendor)
 
         order.sub_total = total_sub_total
         order.shipping_amount = total_shipping

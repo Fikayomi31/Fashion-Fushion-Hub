@@ -95,13 +95,15 @@ class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    #old_price = models.DecimalField(decimal_places=2, max_digits=12, default=0.00)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    
     shipping_amount = models.DecimalField(decimal_places=2, max_digits=12, default=0.0) 
     stock_qty = models.PositiveIntegerField(default=1)
     in_stock = models.BooleanField(default=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
-    vendor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products')
     rating = models.PositiveIntegerField(default=0, null=True, blank=True)
     views = models.PositiveIntegerField(default=0, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True)
@@ -261,7 +263,7 @@ class CartOrder(models.Model):
 class CartOrderItem(models.Model):
     order = models.ForeignKey(CartOrder, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    vendor = models.ForeignKey(User, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
 
     order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='Pending')
     

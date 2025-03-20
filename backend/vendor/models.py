@@ -4,28 +4,6 @@ from userauths.models import User
 from django.utils.text import slugify
 
 
-NOTIFICATION_TYPE = (
-    ('New Order', 'New Order'),
-    ('New Review', 'New Review'),
-)
-
-PAYMENT_METHOD = (
-    ('PayPal', 'PayPal'),
-    ('Stripe', 'Stripe'),
-    ('Flutterwave', 'Flutterwave'),
-    ('Paystack', 'Paystack'),
-    ('Visa', 'Visa'),
-    ('Mastercard', 'Mastercard'),
-    ('bank_transfer', 'Bank Transfer'),
-) 
-
-TYPE = (
-    ('New Order', 'New Order'),
-    ('Item Shipped', 'Item Shipped'),
-    ('Item Delivered', 'Item Delivered')
-)
-
-
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, related_name='vendor')
     image = models.ImageField(upload_to='vendor/images', default='vendor.jpg', blank=True)
@@ -36,17 +14,16 @@ class Vendor(models.Model):
     active = models.BooleanField(default=False)
     slug = models.SlugField(blank=True, null=True)
 
+    
     class Meta:
         verbose_name_plural = 'Vendors'
         ordering = ['-date']
 
-
     def __str__(self):
         return str(self.name)
-    
+
     def save(self, *args, **kwargs):
-        if self.slug == "" or self.slug == None:
+        if self.slug == "" or self.slug == None: 
             self.slug = slugify(self.name)
+            
         super(Vendor, self).save(*args, **kwargs)
-
-
